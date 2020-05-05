@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "gmusic monitor",
-  "version": "0.1",
+  "name": "$name",
+  "version": "$version",
 
   "description": "Monitor your Google Music library and check for albums/songs/artists that disappear",
 
@@ -11,11 +11,8 @@
 
   },
 
-  "default_locale": "en",
-
   "permissions": [
-    "tabs",
-    "storage"
+    "tabs"
   ],
   "web_accessible_resources": [
 
@@ -40,8 +37,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://beatonma.org/*",
-        "https://play.google.com/music/*"
+        "https://play.google.com/music/listen*"
       ],
       "all_frames": true,
       "js": [

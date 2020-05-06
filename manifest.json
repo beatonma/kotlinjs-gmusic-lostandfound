@@ -11,9 +11,7 @@
 
   },
 
-  "permissions": [
-    "tabs"
-  ],
+  "permissions": $permissions,
   "web_accessible_resources": [
 
   ],
@@ -36,12 +34,13 @@
 
   "content_scripts": [
     {
-      "matches": [
-        "https://play.google.com/music/listen*"
-      ],
+      "matches": $content_urls,
       "all_frames": true,
       "js": [
         "content.js"
+      ],
+      "css": [
+        "content.css"
       ],
       "run_at": "document_end"
     }

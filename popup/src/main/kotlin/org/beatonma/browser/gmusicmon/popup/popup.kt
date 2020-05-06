@@ -6,32 +6,30 @@ import org.beatonma.browser.gmusicmon.common.Messages
 import org.beatonma.browser.gmusicmon.dom.ktx.addOnClickListener
 import org.beatonma.browser.gmusicmon.dom.ktx.getButton
 import kotlin.browser.document
+import kotlin.js.json
 
 fun main() {
-    document.write("POPUP SCRIPT!")
     setupListeners()
 }
 
 fun setupListeners() {
-    document.getButton("update_artists_button")?.addOnClickListener {
-        Chrome.tabs.query(object: QueryInfo {
-            override val active: Boolean = true
-            override val currentWindow: Boolean = true
-        }) {
-            it.firstOrNull()?.get("id")
+    document.getButton(Messages.UPDATE_ARTISTS)!!.addOnClickListener {
+        Chrome.tabs.query(QueryInfo(active = true, currentWindow = true)) {
+            val tabId = it.firstOrNull()?.get("id")?.toString()?.toIntOrNull()
+            if (tabId == null) {
+                console.error("tabId is null! $it")
+                return@query
+            }
+            sendUpdateArtistsMessage(tabId)
         }
-        sendUpdateArtistsMessage(0)
     }
 }
 
 private fun sendUpdateArtistsMessage(tabId: Int) {
-    Chrome.tabs.sendMessage(tabId, jsObject { command = Messages.UPDATE_ARTISTS }) {
-        // TODO
-    }
-}
-
-inline fun jsObject(init: dynamic.() -> Unit): dynamic {
-    val o = js("{}")
-    init(o)
-    return o
+    Chrome.tabs.sendMessage(
+        tabId,
+        json("command" to Messages.UPDATE_ARTISTS),
+        options = null,
+        callback = null
+    )
 }

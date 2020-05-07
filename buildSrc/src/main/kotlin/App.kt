@@ -15,6 +15,7 @@ object App {
 
     object Manifest {
         val PERMISSIONS = arrayOf(
+            "storage",
             "tabs"
         )
 

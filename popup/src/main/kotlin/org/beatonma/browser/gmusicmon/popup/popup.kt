@@ -1,35 +1,70 @@
 package org.beatonma.browser.gmusicmon.popup
 
-import com.chrome.platform.Chrome
-import com.chrome.platform.tabs.QueryInfo
-import org.beatonma.browser.gmusicmon.common.Messages
+import org.beatonma.browser.gmusicmon.common.*
 import org.beatonma.browser.gmusicmon.dom.ktx.addOnClickListener
 import org.beatonma.browser.gmusicmon.dom.ktx.getButton
+import kotlinx.html.*
+import kotlinx.html.dom.append
 import kotlin.browser.document
-import kotlin.js.json
+import kotlin.dom.clear
+
+typealias ArtistName = String
+typealias Artists = Set<ArtistName>
 
 fun main() {
     setupListeners()
+    loadSavedArtists()
 }
 
-fun setupListeners() {
-    document.getButton(Messages.UPDATE_ARTISTS)!!.addOnClickListener {
-        Chrome.tabs.query(QueryInfo(active = true, currentWindow = true)) {
-            val tabId = it.firstOrNull()?.get("id")?.toString()?.toIntOrNull()
-            if (tabId == null) {
-                console.error("tabId is null! $it")
-                return@query
+private fun loadSavedArtists() {
+    browser.loadLocal<Array<ArtistName>>(StorageKey.ARTIST_LIST) {
+        onArtistsLoaded(it?.toSet())
+    }
+    browser.loadLocal<String>(StorageKey.LAST_UPDATED) {
+        onTimeLoaded(it)
+    }
+}
+
+private fun onTimeLoaded(date: String?) {
+    val container = document.getElementById("last_update") ?: return
+    container.clear()
+    container.append {
+        div {
+            if (date == null) {
+                +"No previous data"
             }
-            sendUpdateArtistsMessage(tabId)
+            else {
+                +"Last update: $date"
+            }
+        }
+    }
+
+}
+
+private fun onArtistsLoaded(artists: Artists?) {
+    val container = document.getElementById("artists_container") ?: return
+    container.clear()
+    container.append {
+        if (artists == null) {
+            div { +"No saved artists" }
+        }
+        else {
+            h1 { +"${artists.size} artists" }
+            artists.forEach { artist ->
+                div("artist-name") { +artist.replace("&amp;", "&") }
+            }
+        }
+    }
+}
+
+private fun setupListeners() {
+    document.getButton(Messages.UPDATE_ARTISTS)!!.addOnClickListener {
+        browser.withActiveTab { tab ->
+            tab.id?.also { sendUpdateArtistsMessage(it) }
         }
     }
 }
 
 private fun sendUpdateArtistsMessage(tabId: Int) {
-    Chrome.tabs.sendMessage(
-        tabId,
-        json("command" to Messages.UPDATE_ARTISTS),
-        options = null,
-        callback = null
-    )
+    browser.sendCommand(tabId, Messages.UPDATE_ARTISTS)
 }

@@ -2,15 +2,21 @@ pluginManagement {
     repositories {
         mavenCentral()
         gradlePluginPortal()
-        maven ("https://dl.bintray.com/kotlin/kotlin-eap")
+        maven("https://dl.bintray.com/kotlin/kotlin-eap")
+        maven("https://plugins.gradle.org/m2/")
     }
 }
 
 rootProject.name = "gmusic2"
-include(":content")
+
+// App
 include(":background")
+include(":common")
+include(":content")
+include(":dom")
 include(":popup")
 include(":options")
-include(":dom")
-include(":common")
+
+// Browser interface
+include(":browser")
 include(":chrome-platform")

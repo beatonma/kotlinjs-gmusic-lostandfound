@@ -1,4 +1,8 @@
-.gmusic2-updating-message {
+.gmusic2-update-message {
+    font-size: 1.2rem;
+}
+
+.gmusic2-update {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7,14 +11,21 @@
     left: 0;
     right: 0;
     height: 48px;
-    width: 60%;
+    width: 70%;
     min-width: 300px;
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
     color: #ffffffd3;
     background-color: #333333;
-    font-size: 1.2rem;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
+}
+
+.gmusic2-comparison {
+    display: flex;
+}
+
+.column {
+
 }

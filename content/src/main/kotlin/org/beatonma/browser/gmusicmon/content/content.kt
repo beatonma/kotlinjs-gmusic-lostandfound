@@ -1,28 +1,28 @@
 package org.beatonma.browser.gmusicmon.content
 
-import com.chrome.platform.Chrome
 import kotlinx.coroutines.*
-import org.beatonma.browser.gmusicmon.common.Messages
+import kotlinx.html.*
+import kotlinx.html.dom.append
+import org.beatonma.browser.gmusicmon.common.*
 import org.w3c.dom.*
 import kotlin.browser.document
 import kotlin.browser.window
 import kotlin.coroutines.CoroutineContext
+import kotlin.dom.clear
 import kotlin.dom.createElement
+import kotlin.js.Date
 
+
+typealias ArtistName = String
+typealias Artists = Set<ArtistName>
 
 private val application = Application()
 
 fun main() {
-    console.log("CONTENT SCRIPT!")
-    Chrome.runtime.onMessage.addListener { message, _, _ ->
-        when (message["command"]) {
-            Messages.UPDATE_ARTISTS -> application.update()
-            else -> console.log("Unhandled message: ${message.stringify()}")
-        }
+    browser.onCommand(Messages.UPDATE_ARTISTS) {
+        application.update()
     }
 }
-
-fun Any?.stringify() = JSON.stringify(this)
 
 class Application : CoroutineScope {
     private var job = Job()
@@ -31,29 +31,96 @@ class Application : CoroutineScope {
 
     private val timer = Timer()
 
-    var artists = setOf<String>()
+    private var savedArtists: Artists = setOf()
+
+    init {
+        loadSavedArtists()
+    }
+
+    private fun loadSavedArtists() {
+        browser.loadLocal<Array<ArtistName>>(StorageKey.ARTIST_LIST) {
+            onArtistsLoaded(it?.toSet())
+        }
+    }
+
+    private fun saveArtists(artists: Artists) {
+        browser.saveLocal(StorageKey.ARTIST_LIST, artists.toTypedArray())
+        browser.saveLocal(StorageKey.LAST_UPDATED,  Date().toTimeString())
+    }
+
+    private fun onArtistsLoaded(artists: Artists?) {
+        console.log("Loaded ${artists?.size ?: 0} artists from storage")
+        savedArtists = artists ?: setOf()
+    }
 
     fun update() {
         launch {
-            artists = getArtists()
+            val artists = getArtists()
+            checkForChanges(savedArtists, artists)
         }
     }
 
-    private fun showUpdateMessage(artistCount: Int, updateComplete: Boolean = false) {
-        val messageContainer = document.getElementById("gmusic2-updating-message") ?: document.createElement("div") {
-            id = "gmusic2-updating-message"
-            classList.add("gmusic2-updating-message")
-        }
+    private fun checkForChanges(oldArtists: Artists, newArtists: Artists) {
+        val added = newArtists.filterNot { oldArtists.contains(it) }.toSet()
+        val removed = oldArtists.filterNot { newArtists.contains(it) }.toSet()
 
-        val message = when (updateComplete) {
-            true -> "Update complete! Found $artistCount artists."
-            false -> "$artistCount artists discovered..."
+        if (added.isEmpty() && removed.isEmpty()) {
+            showNoChangesUi()
         }
-        messageContainer.innerHTML = message
-        document.body?.append(messageContainer)
+        else {
+            showComparisonUi(added, removed)
+        }
     }
 
-    private suspend fun getArtists(outSet: MutableSet<String> = mutableSetOf()): Set<String> {
+    private fun getUiContainer(): Element {
+        return document.getElementById("gmusic2-update")?.also { it.clear() }
+            ?: document.createElement("div") {
+                id = "gmusic2-update"
+                classList.add("gmusic2-update")
+            }.also { document.body?.append(it) }
+    }
+
+    private fun showNoChangesUi() {
+        getUiContainer().append {
+            div { +"No changes :)" }
+        }
+    }
+
+    private fun showComparisonUi(added: Artists, removed: Artists) {
+        getUiContainer().append {
+            div("gmusic2-header") {
+                button { +"close button" }
+            }
+            div("gmusic2-comparison") {
+                div("column") {
+                    h1 { +"Added artists" }
+                    artistListUi(added)
+                }
+                div("column") {
+                    h1 { +"Removed artists" }
+                    artistListUi(removed)
+                }
+            }
+        }
+    }
+
+    private fun TagConsumer<HTMLElement>.artistListUi(artists: Artists): List<HTMLElement> =
+        artists.map { name -> div { +name } }
+
+    private fun showUpdateMessageUi(data: UiData) {
+        val message = when (data.updateComplete) {
+            true -> "Update complete! Found ${data.artistCount} artists."
+            false -> "${data.artistCount} artists discovered..."
+        }
+        getUiContainer().append {
+            div("gmusic2-update-message") {
+                id = "gmusic2-update-message"
+                +message
+            }
+        }
+    }
+
+    private suspend fun getArtists(outSet: MutableSet<ArtistName> = mutableSetOf()): Artists {
         val mainContainer = document.getElementById("mainContainer") ?: throw Exception("Artists container not found!")
         while (mainContainer.scrollTop != 0.0) {
             mainContainer.scrollTo(0.0, 0.0)
@@ -63,14 +130,17 @@ class Application : CoroutineScope {
             scrollPositionY = mainContainer.scrollTop
             mainContainer.scrollBy(0.0, window.innerHeight / 2.0)
             outSet.addAll(getVisibleArtists())
-            showUpdateMessage(outSet.size)
+
+            showUpdateMessageUi(UiData(artistCount = outSet.size))
             timer.delay(200)
         }
-        showUpdateMessage(outSet.size, updateComplete = true)
-        return outSet
+
+        showUpdateMessageUi(UiData(artistCount = outSet.size, updateComplete = true))
+
+        return outSet.also { saveArtists(it) }
     }
 
-    private suspend fun getVisibleArtists(): List<String> {
+    private suspend fun getVisibleArtists(): List<ArtistName> {
         val r: HTMLCollection = document.getElementsByClassName("material-card entity-card")
         return r.asList()
             .filter { it.getAttribute("data-type") == "artist" }
@@ -97,3 +167,9 @@ class Timer {
         }
     }
 }
+
+
+private data class UiData(
+    var updateComplete: Boolean = false,
+    var artistCount: Int = 0
+)

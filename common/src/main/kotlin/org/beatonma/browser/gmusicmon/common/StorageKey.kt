@@ -1,0 +1,6 @@
+package org.beatonma.browser.gmusicmon.common
+
+object StorageKey {
+    const val ARTIST_LIST = "artist_list"
+    const val LAST_UPDATED = "last_updated"
+}

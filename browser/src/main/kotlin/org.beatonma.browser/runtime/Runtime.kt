@@ -1,6 +1,6 @@
-package com.chrome.platform.runtime
+package org.beatonma.browser.runtime
 
-import com.chrome.platform.tabs.Tab
+import org.beatonma.browser.tabs.Tab
 import kotlin.js.Json
 
 /**
@@ -27,11 +27,11 @@ external interface OnMessage {
 /**
  * https://developer.chrome.com/extensions/runtime#type-MessageSender
  */
-data class MessageSender(
-    val tab: Tab? = null,
-    val frameId: Int? = null,
-    val id: String? = null,
-    val nativeApplication: String? = null,
-    val tlsChannelId: String? = null,
-    val origin: String? = null,
-)
+external interface MessageSender {
+    val tab: Tab?
+    val frameId: Int?
+    val id: String?
+    val nativeApplication: String?
+    val tlsChannelId: String?
+    val origin: String?
+}

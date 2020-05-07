@@ -1,4 +1,4 @@
-package com.chrome.platform.tabs
+package org.beatonma.browser.tabs
 
 import kotlin.js.Json
 
@@ -10,7 +10,7 @@ external interface Tabs {
     fun sendMessage(tabId: Int, message: Any, options: Json?, callback: ((Json) -> Unit)?)
 
     // https://developer.chrome.com/extensions/tabs#method-query
-    fun query(queryInfo: QueryInfo, callback: (Array<Json>) -> Unit)
+    fun query(queryInfo: QueryInfo, callback: (Array<Tab>) -> Unit)
 }
 
 

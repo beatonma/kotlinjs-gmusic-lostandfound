@@ -8,6 +8,7 @@ import kotlin.js.Json
  */
 external interface Runtime {
     val onMessage: OnMessage
+    fun getURL(path: String): String
 }
 
 /**

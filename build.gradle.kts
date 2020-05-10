@@ -55,7 +55,8 @@ distributions {
                     "name" to "${App.NAME}-debug",
                     "version" to App.VERSION,
                     "content_urls" to App.Manifest.CONTENT_SCRIPT_URL_PATTERNS.wrapEach(),
-                    "permissions" to App.Manifest.PERMISSIONS.wrapEach()
+                    "permissions" to App.Manifest.PERMISSIONS.wrapEach(),
+                    "resources" to App.Manifest.RESOURCES.wrapEach()
                 )
             }
             from("**/*.html")

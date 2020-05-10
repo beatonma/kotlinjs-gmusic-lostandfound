@@ -6,22 +6,26 @@ object App {
     object Build {
         const val DEBUG = true
         val allProjectsResourceFilePatterns = if (DEBUG) {
-            arrayOf("**/*.js", "**/*.html", "**/*.css", "**/*.js.map")
+            arrayOf("**/*.js", "**/*.html", "**/*.css", "**/*.svg", "**/*.js.map")
         }
         else {
-            arrayOf("**/*.js", "**/*.html", "**/*.css")
+            arrayOf("**/*.js", "**/*.html", "**/*.css", "**/*.svg")
         }
     }
 
     object Manifest {
         val PERMISSIONS = arrayOf(
             "storage",
-            "tabs"
+            "tabs",
+            "unlimitedStorage"
         )
 
         val CONTENT_SCRIPT_URL_PATTERNS = arrayOf(
-//            "https://beatonma.org/*"
             "https://play.google.com/music/listen*"
+        )
+
+        val RESOURCES = arrayOf(
+            "ic_close.svg"
         )
     }
 }

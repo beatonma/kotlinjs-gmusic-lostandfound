@@ -68,3 +68,5 @@ fun <T> Browser.loadLocal(key: String, then: (T?) -> Unit) {
         then(it[key] as T?)
     }
 }
+
+fun Browser.getResourceUrl(path: String): String = runtime.getURL(path)

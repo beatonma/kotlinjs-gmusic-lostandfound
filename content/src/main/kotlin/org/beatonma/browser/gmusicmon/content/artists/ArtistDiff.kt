@@ -4,16 +4,14 @@ import org.beatonma.browser.gmusicmon.common.StorageKey
 import org.beatonma.browser.gmusicmon.common.browser
 import org.beatonma.browser.gmusicmon.common.loadLocal
 import org.beatonma.browser.gmusicmon.common.saveLocal
+import org.beatonma.browser.gmusicmon.content.ArtistName
+import org.beatonma.browser.gmusicmon.content.Artists
 import org.beatonma.browser.gmusicmon.content.GmusicDiffer
 import org.w3c.dom.HTMLCollection
 import org.w3c.dom.asList
 import org.w3c.dom.get
 import kotlin.browser.document
 import kotlin.js.Date
-
-
-typealias ArtistName = String
-typealias Artists = Set<ArtistName>
 
 object ArtistDiff: GmusicDiffer<ArtistName> {
 
@@ -41,9 +39,7 @@ object ArtistDiff: GmusicDiffer<ArtistName> {
     }
 
     override fun updateUi(data: Artists, complete: Boolean) {
-        ArtistUi.showUpdateMessage(
-            ArtistUiData(artistCount = data.size, updateComplete = complete)
-        )
+        ArtistUi.showUpdateMessage(data.size, complete)
     }
 
     override fun onUpdateReadComplete(data: Set<ArtistName>) {

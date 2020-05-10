@@ -2,6 +2,7 @@ package org.beatonma.browser.gmusicmon.content
 
 import kotlinx.coroutines.*
 import org.beatonma.browser.gmusicmon.common.*
+import org.beatonma.browser.gmusicmon.content.albums.AlbumDiff
 import org.beatonma.browser.gmusicmon.content.artists.ArtistDiff
 import kotlin.browser.document
 import kotlin.browser.window
@@ -25,12 +26,10 @@ class Application : CoroutineScope {
         url ?: throw Exception("Unable to retrieve tab url")
         when {
             url.endsWith("albums") -> {
-
+                launch { AlbumDiff.update() }
             }
             url.endsWith("artists") -> {
-                launch {
-                    ArtistDiff.update()
-                }
+                launch { ArtistDiff.update() }
             }
         }
     }

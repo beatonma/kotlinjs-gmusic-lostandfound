@@ -71,10 +71,20 @@ interface BaseUi<T> {
     }
 
     private fun TagConsumer<HTMLElement>.addedList(added: Set<T>) =
-        added.map { item -> wrappedListItem(item, Elements.ADDED) }
+        if (added.isEmpty()) {
+            div { +"None!" }
+        }
+        else {
+            added.map { item -> wrappedListItem(item, Elements.ADDED) }
+        }
 
     private fun TagConsumer<HTMLElement>.removedList(removed: Set<T>) =
-        removed.map { item -> wrappedListItem(item, Elements.REMOVED) }
+        if (removed.isEmpty()) {
+            div { +"None!" }
+        }
+        else {
+            removed.map { item -> wrappedListItem(item, Elements.REMOVED) }
+        }
 
     private fun TagConsumer<HTMLElement>.wrappedListItem(item: T, className: String): HTMLElement =
         div(Elements.ITEM) {
@@ -88,17 +98,6 @@ interface BaseUi<T> {
         }
 
     fun TagConsumer<HTMLElement>.listItem(item: T): HTMLElement
-
-    private fun TagConsumer<HTMLElement>.artistListItem(name: ArtistName, className: String): HTMLElement =
-        div(Elements.ARTIST) {
-            span(className) {
-                when (className) {
-                    Elements.ADDED -> +"+"
-                    Elements.REMOVED -> +"-"
-                }
-            }
-            span { +name }
-        }
 
     fun showUpdateMessage(itemCount: Int, updateComplete: Boolean) {
         getContainer().append {

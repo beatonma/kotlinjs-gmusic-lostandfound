@@ -1,19 +1,21 @@
-.gmusic2-update-message {
+.gmusic-update-message {
     font-size: 1.2rem;
 }
 
-.gmusic2-update {
+.gmusic-update {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     position: absolute;
+    padding: 24px;
     top: 0;
     left: 0;
     right: 0;
-    height: 48px;
+    max-height: 90%;
     width: 70%;
-    min-width: 300px;
-    max-width: 800px;
+    min-width: 600px;
+    max-width: 1000px;
     margin-left: auto;
     margin-right: auto;
     color: #ffffffd3;
@@ -22,10 +24,78 @@
     border-bottom-right-radius: 12px;
 }
 
-.gmusic2-comparison {
+.gmusic-comparison {
     display: flex;
 }
 
-.column {
+.gmusic-column {
+    min-width: 300px;
+    max-width: 50%;
+    max-height: 70vh;
+}
 
+.gmusic-column-content {
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-overflow: ellipsis;
+}
+
+.gmusic-item, .gmusic-artist, .gmusic-album {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 1.5em;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    white-space: nowrap;
+}
+
+.gmusic-album-name, .gmusic-album-artist {
+    max-width: 45%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-x: hidden;
+}
+
+.gmusic-accent-added {
+    color: #559b4b;
+    font-weight: 700;
+    margin-right: 6px;
+}
+
+.gmusic-accent-removed {
+    color: #d52907;
+    font-weight: 700;
+    margin-right: 6px;
+}
+
+.gmusic-header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.gmusic-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.gmusic-action-close {
+    cursor: pointer;
+    padding: .5rem;
+    margin: 0 6px 12px;
+    user-select: none;
+    align-self: flex-end;
+}
+
+.gmusic-action-close:hover {
+    cursor: pointer;
+    background: #ffffff33;
+    border-radius: .4rem;
+}
+
+.gmusic-inline {
+    margin-left: 4px;
+    margin-right: 4px;
 }
